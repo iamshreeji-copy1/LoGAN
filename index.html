@@ -31,15 +31,46 @@
     <br><br>
 
     <!-- Container for the PDF viewer -->
-    <div id="pdf-container">
-        <embed
-            src="https://raw.githubusercontent.com/iamshreeji-copy1/LoGAN/ca661d73dcfb63653ba85cf234b81f77a69555ed/PDFs/Interspeech_Supplymentory_material.pdf#toolbar=0&navpanes=0&scrollbar=0"
-            type="application/pdf"
-            frameBorder="0"
-            scrolling="auto"
-            height="100%"
-            width="100%"
-        ></embed>
-    </div>
+    <div id="pdf-container"></div>
+
+    <!-- Include PDF.js library -->
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script>
+        // URL of the PDF file
+        const url = 'https://raw.githubusercontent.com/iamshreeji-copy1/LoGAN/ca661d73dcfb63653ba85cf234b81f77a69555ed/PDFs/Interspeech_Supplymentory_material.pdf';
+
+        // Asynchronous download of PDF
+        const loadingTask = pdfjsLib.getDocument(url);
+        loadingTask.promise.then(pdf => {
+            console.log('PDF loaded');
+
+            // Fetch the first page
+            pdf.getPage(1).then(page => {
+                console.log('Page loaded');
+
+                const scale = 1.5;
+                const viewport = page.getViewport({ scale });
+
+                // Prepare canvas using PDF page dimensions
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Append canvas to the pdf-container div
+                const pdfContainer = document.getElementById('pdf-container');
+                pdfContainer.appendChild(canvas);
+
+                // Render PDF page into canvas context
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                page.render(renderContext);
+            });
+        }, function (reason) {
+            console.error(reason);
+        });
+    </script>
 </body>
 </html>
